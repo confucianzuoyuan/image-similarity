@@ -1,14 +1,12 @@
 # How the code is structured ?
 
-- `torch_data.py` contains dataset class that can be used for loading data.
-- `torch_model.py` contains models which we need to train.
-- `torch_engine.py` contains training and validation steps. It also contains code to create embeddings.
-- `utils.py` contains utility functions.
-- `torch_train.py` contains training script. It makes use of `torch_data.py`, `torch_model.py`, `torch_engine.py` and `utils.py`.
-- `torch_infer.py` contains code for inference.
+- `torch_data.py` 包含了 dataset 类，用来加载数据。
+- `torch_model.py` 包含了我们要训练的模型。
+- `torch_engine.py` 包含了训练步骤和验证步骤，还包含了创建嵌入的代码。
+- `utils.py` 包含了一些功能函数。
+- `torch_train.py` 包含了训练脚本。用到了 `torch_data.py`, `torch_model.py`, `torch_engine.py` 和 `utils.py` 。
+- `torch_infer.py` 包含了推理代码。
 
-- The `.ipynb` notebooks are provided as standalone scripts that can be used for training and inference.
+- `.ipynb` notebooks 提供了单独可运行的python脚本，用来训练模型和推理。
 
-This folder structure allows ease of programming, modularization and easy re-use.
-
-
+[dataset link](https://www.kaggle.com/datasets/okeaditya/animals-data)
