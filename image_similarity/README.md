@@ -10,3 +10,5 @@
 - `.ipynb` notebooks 提供了单独可运行的python脚本，用来训练模型和推理。
 
 [dataset link](https://www.kaggle.com/datasets/okeaditya/animals-data)
+
+- `web_app.py` 编写了一个 http server 来托管图片搜索服务。
