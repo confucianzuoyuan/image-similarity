@@ -3,3 +3,8 @@ data/
 flowers/
 mnist/
 *.pth
+__pycache__/
+*.pt
+*.npy
+output/
+dataset/

@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     utils.seed_everything(config.SEED)
 
-    transforms = T.Compose([T.ToTensor()])
+    transforms = T.Compose([T.Resize((64, 64)), T.ToTensor()])
     print("------------ 创建数据集 ------------")
     full_dataset = torch_data.FolderDataset(config.IMG_PATH, transforms)
 

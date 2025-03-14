@@ -26,7 +26,8 @@ def load_image_tensor(image_path, device):
     - image_path: 图像的路径
     - device: "cuda" 或者 "cpu"
     """
-    image_tensor = T.ToTensor()(Image.open(image_path))
+    t = T.Compose([T.Resize((64, 64)), T.ToTensor()])
+    image_tensor = t(Image.open(image_path))
     image_tensor = image_tensor.unsqueeze(0)
     # print(image_tensor.shape)
     # input_images = image_tensor.to(device)
@@ -136,7 +137,7 @@ if __name__ == "__main__":
     # 加载编码器的state dict
     encoder.load_state_dict(torch.load(config.ENCODER_MODEL_PATH, map_location=device))
     encoder.eval()
-    encoder.to(device)
+    # encoder.to(device)
 
     # 加载嵌入
     embedding = np.load(config.EMBEDDING_PATH)
@@ -144,6 +145,13 @@ if __name__ == "__main__":
     indices_list = compute_similar_images(
         config.TEST_IMAGE_PATH, config.NUM_IMAGES, embedding, device
     )
-    plot_similar_images(indices_list)
-    indices_list = compute_similar_features(config.TEST_IMAGE_PATH, 5, embedding)
-    plot_similar_images(indices_list)
+    print(indices_list)
+    import shutil
+    shutil.rmtree('output')
+    os.mkdir('output')
+    for idx in indices_list[0]:
+        shutil.copy('dataset/' + str(idx) + '.jpg', 'output/')
+    # plot_similar_images(indices_list)
+    # indices_list = compute_similar_features(config.TEST_IMAGE_PATH, 5, embedding)
+    # print(indices_list)
+    # plot_similar_images(indices_list)
