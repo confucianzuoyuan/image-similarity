@@ -15,32 +15,32 @@ from sklearn.decomposition import PCA
 
 app = Flask(__name__)
 
-print("App started")
+print("启动应用")
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-# Load the model before we start the server
+# 在启动服务器之前加载模型
 encoder = torch_model.ConvEncoder()
-# Load the state dict of encoder
+# 加载 encoder 的 state dict
 encoder.load_state_dict(torch.load(config.ENCODER_MODEL_PATH, map_location=device))
 encoder.eval()
 encoder.to(device)
-# Loads the embedding
+# 加载嵌入
 embedding = np.load(config.EMBEDDING_PATH)
 
-print("Loaded model and embeddings")
+print("模型和嵌入已加载完成")
 
 
 def compute_similar_images(image_tensor, num_images, embedding, device):
     """
-    Given an image and number of similar images to generate.
-    Returns the num_images closest neares images.
+    给定一张图像和要生成的相似图像的数量。
+    返回 num_images 张最相似的图像的数量
 
-    Args:
-    image_tenosr: PIL read image_tensor whose similar images are needed.
-    num_images: Number of similar images to find.
-    embedding : A (num_images, embedding_dim) Embedding of images learnt from auto-encoder.
-    device : "cuda" or "cpu" device.
+    参数:
+    - image_tenosr: 通过 PIL 将图像转换成的张量 image_tensor ，需要寻找和 image_tensor 相似的图像。
+    - num_images: 要寻找的相似图像的数量。
+    - embedding : 一个 (num_images, embedding_dim) 元组，是从自编码器学到的图像的嵌入。
+    - device : "cuda" 或者 "cpu" 设备。
     """
 
     image_tensor = image_tensor.to(device)
@@ -53,6 +53,7 @@ def compute_similar_images(image_tensor, num_images, embedding, device):
     flattened_embedding = image_embedding.reshape((image_embedding.shape[0], -1))
     # print(flattened_embedding.shape)
 
+    # 使用 KNN 算法寻找最近邻的图像
     knn = NearestNeighbors(n_neighbors=num_images, metric="cosine")
     knn.fit(embedding)
 
@@ -64,22 +65,23 @@ def compute_similar_images(image_tensor, num_images, embedding, device):
 
 def compute_similar_features(image, num_images, embedding, nfeatures=30):
     """
-    Given a image, it computes features using ORB detector and finds similar images to it
-    Args:
-    image: Opencv read Image whose features and simlar images are required.
-    num_images: Number of similar images required.
-    embedding: 2 Dimensional Embedding vector.
-    nfeatures: (optional) Number of features ORB needs to compute
+    给定一张图像，使用 ORB detector 计算特征并查找具有相似特征的图像。
+    
+    参数:
+    - image: 通过 Opencv 读取的 Image 类型的图像，查找和 image 的特征最接近的图像。
+    - num_images: 需要查找的相似图像的数量。
+    - embedding: 2 维嵌入向量。
+    - nfeatures: (可选) ORB 需要计算的特征数量。
     """
 
     orb = cv2.ORB_create(nfeatures=nfeatures)
 
-    # Detect features
+    # 探测特征
     keypoint_features = orb.detect(image)
-    # compute the descriptors with ORB
+    # 使用 ORB 计算特征
     keypoint_features, des = orb.compute(image, keypoint_features)
 
-    # des contains the description to features
+    # des 包含特征的描述
 
     des = des / 255.0
     des = np.expand_dims(des, axis=0)
@@ -102,22 +104,21 @@ def compute_similar_features(image, num_images, embedding, nfeatures=30):
     return indices_list
 
 
-# For the home route and health check
+# 首页
 @app.route("/")
 def index():
-    return "App is Up"
+    return "应用启动成功"
 
 
 @app.route("/simfeat", methods=["POST"])
 def simfeat():
     r = request.files["image"]
-    # print("Hi")
-    # convert string of image data to uint8
+    # 将字符串格式的图像数据转换成uint8类型
     nparr = np.fromstring(r.data, np.uint8)
-    # decode image
+    # 对图像进行解码
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     indices_list = compute_similar_features(img, num_images=5, embedding=embedding)
-    # Need to display the images
+    # 返回给前端显示图像
     return (
         json.dumps({"indices_list": indices_list}),
         200,
@@ -127,15 +128,19 @@ def simfeat():
 
 @app.route("/simimages", methods=["POST"])
 def simimages():
+    # 从请求中获取图像数据
     image = request.files["image"]
-    # print("Hi")
+    # 作为图像打开
     image = Image.open(image)
+    # 转换成张量
     image_tensor = T.ToTensor()(image)
+    # 增加 1 个维度
     image_tensor = image_tensor.unsqueeze(0)
+    # 计算并返回相似的图像
     indices_list = compute_similar_images(
         image_tensor, num_images=5, embedding=embedding, device=device
     )
-    # Need to display the images
+    # 返回给前端显示图像
     return (
         json.dumps({"indices_list": indices_list}),
         200,

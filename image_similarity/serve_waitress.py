@@ -1,4 +1,4 @@
-# Serve the flask app with wsgi using waitress
+# 使用 Flash 实现 Web 服务器
 
 from waitress import serve
 import web_app

@@ -1,4 +1,4 @@
-##### Clusters the Embeddings using PCA and T-SNE #########
+##### 使用 PCA 和 T-SNE 对嵌入进行聚类 #########
 
 __all__ = ["cluster_images", "vizualise_tsne"]
 
@@ -12,12 +12,12 @@ import matplotlib.pyplot as plt
 
 def cluster_images(embedding, pca_num_components: int, tsne_num_components: int):
     """
-    Clusters and plots the images using PCA + T-SNE approach.
-    Args:
-
-    embedding: A 2D Vector of image embeddings.
-    pca_num_components: Number of componenets PCA should reduce.
-    tsne_num_components: Number of componenets T-SNE should reduce to. Suggested: 2
+    使用 PCA + T-SNE 算法对图片进行聚类，以及可视化 T-SNE
+    
+    参数:
+    - embedding: 图像嵌入的 2 维向量表示
+    - pca_num_components: Number of componenets PCA should reduce.
+    - tsne_num_components: Number of componenets T-SNE should reduce to. Suggested: 2
     """
     pca_file_name = f"..//data//models//pca_{pca_num_components}.pkl"
     tsne_file_name = f"..//data//models//tsne_{tsne_num_components}.pkl"
@@ -25,14 +25,14 @@ def cluster_images(embedding, pca_num_components: int, tsne_num_components: int)
         f"..//data//models//tsne_embeddings_{tsne_num_components}.pkl"
     )
 
-    print("Reducing Dimensions using PCA")
+    print("使用 PCA 算法降维")
 
     pca = PCA(n_components=pca_num_components, random_state=42)
     reduced_embedding = pca.fit_transform(embedding)
     # print(reduced_embedding.shape)
 
-    # Cluster them using T-SNE.
-    print("Using T-SNE to cluster them")
+    # 使用 T-SNE 聚类
+    print("使用 T-SNE 聚类")
     tsne_obj = TSNE(
         n_components=tsne_num_components,
         verbose=1,
@@ -46,23 +46,24 @@ def cluster_images(embedding, pca_num_components: int, tsne_num_components: int)
 
     # print(tsne_embedding.shape)
 
-    # Dump the TSNE and PCA object.
+    # 保存 TSNE 和 PCA 对象.
     pickle.dump(pca, open(pca_file_name, "wb"))
     # pickle.dump(tsne_embedding)
     pickle.dump(tsne_obj, open(tsne_file_name, "wb"))
 
-    # Vizualize the TSNE.
+    # 可视化 TSNE.
     vizualise_tsne(tsne_embedding)
 
-    # Save the embeddings.
+    # 保存嵌入.
     pickle.dump(tsne_embedding, open(tsne_embeddings_file_name, "wb"))
 
 
 def vizualise_tsne(tsne_embedding):
     """
-    Plots the T-SNE embedding.
-    Args:
-    tsne_embedding: 2 Dimensional T-SNE embedding.
+    可视化 T-SNE 嵌入
+    
+    参数:
+    tsne_embedding: 2 维 T-SNE 嵌入
     """
 
     x = tsne_embedding[:, 0]
@@ -73,7 +74,7 @@ def vizualise_tsne(tsne_embedding):
 
 
 if __name__ == "__main__":
-    # Loads the embedding
+    # 加载嵌入
     embedding = np.load(config.EMBEDDING_PATH)
 
     # print(embedding.shape)

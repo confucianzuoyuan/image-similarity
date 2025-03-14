@@ -1,6 +1,6 @@
 IMG_PATH = "../input/animals-data/dataset/"
-IMG_HEIGHT = 512  # The images are already resized here
-IMG_WIDTH = 512  # The images are already resized here
+IMG_HEIGHT = 512  # 图片的高度
+IMG_WIDTH = 512  # 图片的宽度
 
 SEED = 42
 TRAIN_RATIO = 0.75
@@ -9,11 +9,11 @@ SHUFFLE_BUFFER_SIZE = 100
 
 LEARNING_RATE = 1e-3
 EPOCHS = 30
-TRAIN_BATCH_SIZE = 32  # Let's see, I don't have GPU, Google Colab is best hope
-TEST_BATCH_SIZE = 32  # Let's see, I don't have GPU, Google Colab is best hope
+TRAIN_BATCH_SIZE = 32
+TEST_BATCH_SIZE = 32
 FULL_BATCH_SIZE = 32
 
-###### Train and Test time #########
+###### 模型和嵌入相关 #########
 
 DATA_PATH = "../data/images/"
 AUTOENCODER_MODEL_PATH = "baseline_autoencoder.pt"
@@ -23,6 +23,6 @@ EMBEDDING_PATH = "../data/models/data_embedding_f.npy"
 EMBEDDING_SHAPE = (1, 256, 16, 16)
 # TEST_RATIO = 0.2
 
-###### Test time #########
+###### 测试数据路径 #########
 NUM_IMAGES = 10
 TEST_IMAGE_PATH = "../data/images/2485.jpg"

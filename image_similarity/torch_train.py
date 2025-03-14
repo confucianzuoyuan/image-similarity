@@ -1,4 +1,4 @@
-# Training script for Auto-Encoder.
+# 自编码器的训练脚本。
 
 import torch
 import torch_model
@@ -18,12 +18,12 @@ if __name__ == "__main__":
     else:
         device = "cpu"
 
-    print("Setting Seed for the run, seed = {}".format(config.SEED))
+    print("设置训练模型的随机数种子, seed = {}".format(config.SEED))
 
     utils.seed_everything(config.SEED)
 
     transforms = T.Compose([T.ToTensor()])
-    print("------------ Creating Dataset ------------")
+    print("------------ 创建数据集 ------------")
     full_dataset = torch_data.FolderDataset(config.IMG_PATH, transforms)
 
     train_size = int(config.TRAIN_RATIO * len(full_dataset))
@@ -33,8 +33,8 @@ if __name__ == "__main__":
         full_dataset, [train_size, val_size]
     )
 
-    print("------------ Dataset Created ------------")
-    print("------------ Creating DataLoader ------------")
+    print("------------ 数据集创建完成 ------------")
+    print("------------ 创建数据加载器 ------------")
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=config.TRAIN_BATCH_SIZE, shuffle=True, drop_last=True
     )
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         full_dataset, batch_size=config.FULL_BATCH_SIZE
     )
 
-    print("------------ Dataloader Cretead ------------")
+    print("------------ 数据加载器创建完成 ------------")
 
     # print(train_loader)
     loss_fn = nn.MSELoss()
@@ -54,9 +54,9 @@ if __name__ == "__main__":
     decoder = torch_model.ConvDecoder()
 
     if torch.cuda.is_available():
-        print("GPU Availaible moving models to GPU")
+        print("GPU 可用，可以将模型移动到 GPU。")
     else:
-        print("Moving models to CPU")
+        print("可以将模型移动到CPU。")
 
     encoder.to(device)
     decoder.to(device)
@@ -80,26 +80,26 @@ if __name__ == "__main__":
             encoder, decoder, val_loader, loss_fn, device=device
         )
 
-        # Simple Best Model saving
+        # 保存最好的模型
         if val_loss < max_loss:
-            print("Validation Loss decreased, saving new best model")
+            print("验证集的损失减小了，保存新的最好的模型。")
             torch.save(encoder.state_dict(), config.ENCODER_MODEL_PATH)
             torch.save(decoder.state_dict(), config.DECODER_MODEL_PATH)
 
         print(f"Epochs = {epoch}, Validation Loss : {val_loss}")
 
-    print("Training Done")
+    print("训练结束")
 
-    print("---- Creating Embeddings for the full dataset ---- ")
+    print("---- 对整个数据集创建嵌入 ---- ")
 
     embedding = torch_engine.create_embedding(
         encoder, full_loader, config.EMBEDDING_SHAPE, device
     )
 
-    # Convert embedding to numpy and save them
+    # 将嵌入转换成numpy数据类型，并保存
     numpy_embedding = embedding.cpu().detach().numpy()
     num_images = numpy_embedding.shape[0]
 
-    # Dump the embeddings for complete dataset, not just train
+    # 将嵌入转成可以保存的类型
     flattened_embedding = numpy_embedding.reshape((num_images, -1))
     np.save(config.EMBEDDING_PATH, flattened_embedding)

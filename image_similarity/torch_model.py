@@ -8,7 +8,7 @@ import torch.nn as nn
 
 class ConvEncoder(nn.Module):
     """
-    A simple Convolutional Encoder Model
+    一个简单的卷积编码器模型
     """
 
     def __init__(self):
@@ -71,7 +71,7 @@ class ConvEncoder(nn.Module):
 
 class ConvDecoder(nn.Module):
     """
-    A simple Convolutional Decoder Model
+    一个简单的卷积解码器模型
     """
 
     def __init__(self):

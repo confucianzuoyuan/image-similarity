@@ -1,8 +1,3 @@
-"""
-I can write this if we need custom training loop etc.
-I usually use this in PyTorch.
-"""
-
 __all__ = ["train_step", "val_step", "create_embedding"]
 
 import torch
@@ -13,16 +8,17 @@ import torch.nn as nn
 
 def train_step(encoder, decoder, train_loader, loss_fn, optimizer, device):
     """
-    Performs a single training step
-    Args:
-    encoder: A convolutional Encoder. E.g. torch_model ConvEncoder
-    decoder: A convolutional Decoder. E.g. torch_model ConvDecoder
-    train_loader: PyTorch dataloader, containing (images, images).
-    loss_fn: PyTorch loss_fn, computes loss between 2 images.
-    optimizer: PyTorch optimizer.
-    device: "cuda" or "cpu"
+    执行一个训练步骤
+    
+    参数:
+    - encoder: 卷积编码器。例如：torch_model ConvEncoder
+    - decoder: 卷积解码器。例如：torch_model ConvDecoder
+    - train_loader: PyTorch dataloader, 包含 (images, images).
+    - loss_fn: PyTorch loss_fn, 计算两幅图像之间的损失（差值，loss）
+    - optimizer: PyTorch optimizer.
+    - device: "cuda" 或者 "cpu"
 
-    Returns: Train Loss
+    返回值: 训练损失
     """
     encoder.train()
     decoder.train()
@@ -48,15 +44,16 @@ def train_step(encoder, decoder, train_loader, loss_fn, optimizer, device):
 
 def val_step(encoder, decoder, val_loader, loss_fn, device):
     """
-    Performs a single training step
-    Args:
-    encoder: A convolutional Encoder. E.g. torch_model ConvEncoder
-    decoder: A convolutional Decoder. E.g. torch_model ConvDecoder
-    val_loader: PyTorch dataloader, containing (images, images).
-    loss_fn: PyTorch loss_fn, computes loss between 2 images.
-    device: "cuda" or "cpu"
+    执行一个训练步骤
+    
+    参数:
+    - encoder: 卷积编码器。例如：torch_model ConvEncoder
+    - decoder: 卷积解码器。例如：torch_model ConvDecoder
+    - val_loader: PyTorch dataloader, 包含 (images, images).
+    - loss_fn: PyTorch loss_fn, 计算两幅图像之间的损失（差值，loss）
+    - device: "cuda" 或者 "cpu"
 
-    Returns: Validation Loss
+    返回值: 验证损失
     """
 
     encoder.eval()
@@ -77,13 +74,15 @@ def val_step(encoder, decoder, val_loader, loss_fn, device):
 
 def create_embedding(encoder, full_loader, embedding_dim, device):
     """
-    Creates embedding using encoder from dataloader.
-    encoder: A convolutional Encoder. E.g. torch_model ConvEncoder
-    full_loader: PyTorch dataloader, containing (images, images) over entire dataset.
-    embedding_dim: Tuple (c, h, w) Dimension of embedding = output of encoder dimesntions.
-    device: "cuda" or "cpu"
+    使用编码器为数据创建嵌入
+    
+    参数：
+    - encoder: 卷积编码器。例如：torch_model ConvEncoder
+    - full_loader: PyTorch dataloader, 包含整个数据集的 (images, images) 
+    - embedding_dim: Tuple (c, h, w) 嵌入维度 = 编码器输出的维度。
+    - device: "cuda" 或者 "cpu"
 
-    Returns: Embedding of size (num_images_in_loader + 1, c, h, w)
+    返回值: 嵌入的大小 (num_images_in_loader + 1, c, h, w)
     """
     encoder.eval()
     embedding = torch.randn(embedding_dim)

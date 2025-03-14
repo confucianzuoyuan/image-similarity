@@ -20,10 +20,11 @@ from sklearn.decomposition import PCA
 
 def load_image_tensor(image_path, device):
     """
-    Loads a given image to device.
-    Args:
-    image_path: path to image to be loaded.
-    device: "cuda" or "cpu"
+    将图像加载到 device 。
+    
+    参数:
+    - image_path: 图像的路径
+    - device: "cuda" 或者 "cpu"
     """
     image_tensor = T.ToTensor()(Image.open(image_path))
     image_tensor = image_tensor.unsqueeze(0)
@@ -99,7 +100,7 @@ def compute_similar_features(image_path, num_images, embedding, nfeatures=30):
     image = cv2.imread(image_path)
     orb = cv2.ORB_create(nfeatures=nfeatures)
 
-    # Detect features
+    # 探测特征
     keypoint_features = orb.detect(image)
     # compute the descriptors with ORB
     keypoint_features, des = orb.compute(image, keypoint_features)
@@ -128,17 +129,16 @@ def compute_similar_features(image_path, num_images, embedding, nfeatures=30):
 
 
 if __name__ == "__main__":
-    # Loads the model
-
+    # 加载模型
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     encoder = torch_model.ConvEncoder()
 
-    # Load the state dict of encoder
+    # 加载编码器的state dict
     encoder.load_state_dict(torch.load(config.ENCODER_MODEL_PATH, map_location=device))
     encoder.eval()
     encoder.to(device)
 
-    # Loads the embedding
+    # 加载嵌入
     embedding = np.load(config.EMBEDDING_PATH)
 
     indices_list = compute_similar_images(
