@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传图片并显示相似图片</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #image-preview {
+            max-width: 300px;
+            max-height: 300px;
+            margin-bottom: 20px;
+        }
+        .similar-images {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .similar-images img {
+            max-width: 100px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>上传图片并显示相似图片</h1>
+    <input type="file" id="image-upload" accept="image/*">
+    <button id="upload-button">上传</button>
+    <div>
+        <h3>上传的图片预览:</h3>
+        <img id="image-preview" src="" alt="Image Preview" />
+    </div>
+    <div class="similar-images" id="similar-images"></div>
+
+    <script>
+        document.getElementById('upload-button').onclick = function() {
+            const fileInput = document.getElementById('image-upload');
+            const imagePreview = document.getElementById('image-preview');
+            const similarImagesDiv = document.getElementById('similar-images');
+            console.log('=========================');
+
+
+            if (fileInput.files.length === 0) {
+                alert("请先选择一张图片！");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+
+            // 显示上传的图片预览
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+
+
+            // 发送请求到后端
+            fetch('/simimages', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 清空之前的相似图片
+                similarImagesDiv.innerHTML = '';
+
+                // 显示相似的图片
+                console.log(data.indices_list);
+                data.indices_list.forEach(index => {
+                    const img = document.createElement('img');
+                    img.src = `dataset/${index}.jpg`;  // 假设输出图片的命名规则为 index.jpg
+                    similarImagesDiv.appendChild(img);
+                });
+            })
+            .catch(error => {
+                console.error('错误:', error);
+            });
+        };
+    </script>
+</body>
+</html>

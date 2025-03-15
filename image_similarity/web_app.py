@@ -1,6 +1,6 @@
 # Let's make the app
 
-from flask import Flask, request, json
+from flask import Flask, request, json, render_template
 import torch_model
 import config
 import torch
@@ -13,7 +13,7 @@ import cv2
 from PIL import Image
 from sklearn.decomposition import PCA
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='dataset')
 
 print("启动应用")
 
@@ -107,7 +107,7 @@ def compute_similar_features(image, num_images, embedding, nfeatures=30):
 # 首页
 @app.route("/")
 def index():
-    return "应用启动成功"
+    return render_template('index.html')
 
 
 @app.route("/simfeat", methods=["POST"])
@@ -133,7 +133,8 @@ def simimages():
     # 作为图像打开
     image = Image.open(image)
     # 转换成张量
-    image_tensor = T.ToTensor()(image)
+    t = T.Compose([T.Resize((64, 64)), T.ToTensor()])
+    image_tensor = t(image)
     # 增加 1 个维度
     image_tensor = image_tensor.unsqueeze(0)
     # 计算并返回相似的图像
@@ -142,7 +143,7 @@ def simimages():
     )
     # 返回给前端显示图像
     return (
-        json.dumps({"indices_list": indices_list}),
+        json.dumps({"indices_list": indices_list[0]}),
         200,
         {"ContentType": "application/json"},
     )
